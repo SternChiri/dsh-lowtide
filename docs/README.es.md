@@ -43,7 +43,7 @@ Algunas capacidades destacadas:
 
 **Viernes por la noche.** Pon en cola las tareas de toda la semana de una vez: limpieza de dependencias, tests que faltan, scripts de datos. Los fines de semana el precio valle está activo las 24 horas. Tú sales; el plugin trabaja desde casa. El lunes revisas el informe — reintenta lo que falló, fusiona lo que está bien.
 
-**Una idea a las 10 de la mañana.** Estás a mitad de una conversación con el agente sobre un bug urgente cuando piensas "oye, actualiza también la documentación". Aparece la tarjeta de interceptación: ejecutarlo ahora cuesta el precio punta, esta noche aproximadamente la mitad — la diferencia está explicada. Haz clic en "poner en cola para fuera de horas punta"; tu borrador sobrevive intacto y vuelves al bug.
+**Una idea a las 10 de la mañana.** Estás a mitad de una conversación con el agente sobre un bug urgente cuando piensas "oye, actualiza también la documentación". Aparece la tarjeta de sugerencia en horas punta: ejecutarlo ahora cuesta el precio punta, esta noche aproximadamente la mitad — la diferencia está explicada. Haz clic en "poner en cola para fuera de horas punta"; tu borrador sobrevive intacto y vuelves al bug.
 
 **Un servidor siempre encendido.** Tienes una máquina ejecutando dsh 24/7. Cambia al modo L3 totalmente automático y presenta tareas desde cualquier lugar a través de la API (`POST /ds-lowtide/tasks`). Las ejecuta según el horario y escribe el informe. Nadie está vigilando, pero la sandbox, el presupuesto diario y los bloqueos de archivos siguen ahí.
 
@@ -58,7 +58,7 @@ Algunas capacidades destacadas:
 Siempre que tengas    El dock de la cola     Cuando se abre la        Cuando vuelves:
 un momento: un clic   agrupa las tareas por  ventana de valle:        abre el informe —
 desde la tarjeta de   espacio de trabajo;    pasan cinco compuertas   resultados + diff
-interceptación, o     haz el triaje línea    de preflight, luego →    + gasto real
+sugerencia, o     haz el triaje línea    de preflight, luego →    + gasto real
 presenta un ticket →  por línea:         →   ejecuciones en sandbox   + dinero ahorrado
 (4 estrategias)       ✓aprobar ⏸posponer     un lote por ventana
                       ✕descartar / aprobar-todo
@@ -90,7 +90,7 @@ El paso dos es donde lowtide se diferencia de un "script totalmente automatizado
 
 ![settings](../assets/screenshots/settings.png)
 
-Tres superficies más se esconden en el flujo diario: la **píldora de precio** (cabecera de sesión — ocupado/inactivo, tamaño de la cola; haz clic para editar ventanas), la **tarjeta de interceptación en horas punta** (escribe en hora punta y aparece; la diferencia de precio está explicada; tu borrador sobrevive) y el **informe de ejecución** (el resumen matutino: ahorros primero, anomalías fijadas, candidatos esperando tu elección, copia en Markdown con un clic).
+Tres superficies más se esconden en el flujo diario: la **píldora de precio** (cabecera de sesión — ocupado/inactivo, tamaño de la cola; haz clic para editar ventanas), la **tarjeta de sugerencia en horas punta en horas punta** (escribe en hora punta y aparece; la diferencia de precio está explicada; tu borrador sobrevive) y el **informe de ejecución** (el resumen matutino: ahorros primero, anomalías fijadas, candidatos esperando tu elección, copia en Markdown con un clic).
 
 ## Sobre los espacios de trabajo de lowtide
 
@@ -169,7 +169,7 @@ Abre dsh después: deberías ver la píldora de precio en la cabecera de la sesi
 
 ## Uso diario
 
-**Tres formas de presentar una tarea.** La tarjeta de interceptación (escribe en hora punta, un clic, tu borrador se convierte en el ticket sin cambios); el modal de tickets ("Nueva" junto al área de entrada — prompt, estrategia, rondas, prioridad); o la API (`POST /ds-lowtide/tasks`, conéctala a tu propia automatización).
+**Tres formas de presentar una tarea.** La tarjeta de sugerencia en horas punta (escribe en hora punta, un clic, tu borrador se convierte en el ticket sin cambios); el modal de tickets ("Nueva" junto al área de entrada — prompt, estrategia, rondas, prioridad); o la API (`POST /ds-lowtide/tasks`, conéctala a tu propia automatización).
 
 **La vida en el dock de la cola.** Agrupada por espacio de trabajo en pendientes / terminadas / descartadas. En línea por tarea: ✓ aprobar, ⏸ posponer, ✕ descartar (eliminación suave, restaurable). "Aprobar todo" libera todo; "limpiar terminadas" lo mantiene ordenado (los libros no se ven afectados); "Ejecutar ahora" se salta la espera y lanza un lote de inmediato — así se depura.
 
@@ -215,7 +215,7 @@ Prefijo `/ds-lowtide/`, detrás de la barrera de confianza de mismo origen + loo
 | POST | `/tasks/approve-all` | Aprobar todo |
 | POST | `/estimate` | Estimación: punta vs valle |
 | POST | `/batch/run-now` | Ejecutar el lote ahora |
-| POST | `/dismiss` | Sin interceptación el resto del día |
+| POST | `/dismiss` | Sin sugerencias de horas punta el resto del día |
 | GET | `/health` | Latido |
 
 ## Presets de permisos

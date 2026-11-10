@@ -41,7 +41,7 @@ A few key capabilities:
 
 **Friday night.** Queue a week's worth of chores in one go: dependency cleanup, missing tests, data scripts. Weekends are valley price around the clock. You go out; it works from home. Monday you check the report — retry what failed, merge what's good.
 
-**A 10 AM brainwave.** You're mid-conversation with the agent about an urgent bug when you think "hey, update the docs too." The intercept card pops up: running now costs peak price, tonight it's about half — the difference is spelled out. Click "queue for off-peak"; your draft survives untouched, and you go back to the bug.
+**A 10 AM brainwave.** You're mid-conversation with the agent about an urgent bug when you think "hey, update the docs too." The peak-hours prompt pops up: running now costs peak price, tonight it's about half — the difference is spelled out. Click "queue for off-peak"; your draft survives untouched, and you go back to the bug.
 
 **An always-on server.** You've got a machine running dsh 24/7. Switch to L3 full-auto, then file tasks from anywhere through the API (`POST /ds-lowtide/tasks`). It runs them on schedule and writes the report. Nobody's watching, but the sandbox, the daily budget, and the file locks are all still there.
 
@@ -55,8 +55,8 @@ A few key capabilities:
 ① Intake             ② Adjudicate         ③ Execute               ④ Accept
 Whenever you have    The queue dock        When the off-peak       When you're back:
 a moment: one-click  groups tasks by       window opens: five      open the report —
-from the intercept   workspace; triage    preflight gates pass,    results + diff
-card, or file a  →   line by line:    →   then sandboxed runs →    + actual spend
+from the peak      workspace; triage    preflight gates pass,    results + diff
+prompt, or file a →   line by line:    →   then sandboxed runs →    + actual spend
 ticket (4 strategies) ✓approve ⏸defer     one batch per window     + money saved
                      ✕drop / approve-all
 ```
@@ -87,7 +87,7 @@ Step two is where lowtide differs from a "fully automated script": **every task 
 
 ![settings](./assets/screenshots/settings.png)
 
-Three more pieces of UI appear in daily use: the **price pill** (session header — busy/idle, queue size; click it to edit windows), the **peak-hours intercept card** (type at peak, it appears; the price difference is spelled out; your draft survives), and the **execution report** (the morning briefing: savings first, anomalies pinned, candidates awaiting your pick, one-click Markdown copy).
+Three more pieces of UI appear in daily use: the **price pill** (session header — busy/idle, queue size; click it to edit windows), the **peak-hours prompt** (type at peak and it appears in the input dock; the native editor keeps focus, the price difference is spelled out, and your draft survives), and the **execution report** (the morning briefing: savings first, anomalies pinned, candidates awaiting your pick, one-click Markdown copy).
 
 ## About lowtide workspaces
 
@@ -142,7 +142,7 @@ Prerequisites: Node `^22.19 || >=24`, pnpm `11.7`. Everything is on the public n
 
 First install dsh (pick one): Desktop from DeepSeek's official channels, or `npm install -g @deepseek-ai/dsh` for the CLI. Then configure a working model in dsh's settings (e.g. an official DeepSeek API key) — lowtide never touches your credentials.
 
-> **Compatibility (dsh-lowtide ≥ 0.2.8):** dsh CLI **≥ 0.1.5-rc.1**, **DSH Desktop 2.0.3**, or the runtime bundled with **DeepSeek Harness 0.2.1-rc.2**. The browser half limits itself to the module words every shell generation seeds statically, so one artifact boots on both; 0.1.1-era CLI shells share the desktop's seed table and should behave the same, but only the targets above are tested. (0.2.2 and older fail to boot on CLI 0.1.5 — see issue #4.) **0.2.8 raises the declared host range to `>=0.1.0-rc.7 <0.2.2-0`:** 0.2.6 and 0.2.7 stopped at `<0.2.1-0`, which excludes the 0.2.1 runtime, so the gate skipped the entire bundle and no part of the plugin loaded; 0.2.3–0.2.5 used a caret (`^0.1.0-rc.7`, later `^0.1.5-rc.1`) whose 0.x upper bound stopped short of the 0.2.0 line.
+> **Compatibility (dsh-lowtide ≥ 0.3.0):** dsh CLI **≥ 0.1.5-rc.1**, **DSH Desktop 2.0.3**, or the runtime bundled with **DeepSeek Harness 0.2.2-rc.1**. The browser half limits itself to the module words every shell generation seeds statically, so one artifact boots on both. **0.3.0 declares `>=0.1.0-rc.7 <0.2.3-0`:** the 0.2.2-rc.1 runtime was verified in an isolated web profile with its own home and synthetic data. Earlier compatibility notes remain in `CHANGELOG.md`; untested future hosts stay outside the explicit bound.
 
 Then clone, build, install:
 
@@ -168,7 +168,7 @@ Open dsh afterwards: you should see the price pill in the session header and the
 
 ## Day-to-day usage
 
-**Three ways to file a task.** The intercept card (type at peak, one click, your draft becomes the ticket unchanged); the ticket modal ("New" beside the input area — prompt, strategy, rounds, priority); or the API (`POST /ds-lowtide/tasks`, wire it into your own automation).
+**Three ways to file a task.** The peak-hours prompt (type at peak, one click, your draft becomes the ticket unchanged); the ticket modal ("New" beside the input area — prompt, strategy, rounds, priority); or the API (`POST /ds-lowtide/tasks`, wire it into your own automation).
 
 **Life in the queue dock.** Grouped by workspace into pending / finished / dropped. Inline per task: ✓ approve, ⏸ defer, ✕ drop (soft delete, restorable). "Approve all" releases everything; "clear finished" keeps it tidy (the books are unaffected); "Run now" skips the wait and launches a batch immediately — that's how you debug.
 
@@ -214,7 +214,7 @@ Prefix `/ds-lowtide/`, behind the same-origin + loopback trust fence:
 | POST | `/tasks/approve-all` | Approve everything |
 | POST | `/estimate` | Estimate: peak vs off-peak |
 | POST | `/batch/run-now` | Run the batch now |
-| POST | `/dismiss` | No interception for the rest of today |
+| POST | `/dismiss` | Dismiss the peak prompt for the rest of today |
 | GET | `/health` | Heartbeat |
 
 ## Permission presets

@@ -54,7 +54,7 @@ lowtide 是 DeepSeek Harness (dsh) 的一个插件。它解决的问题其实很
 | 界面 | 槽位 | 说明 |
 |---|---|---|
 | ① 价格状态胶囊 | `conversation.session.header.utilities` | 状态点 + 闲时/忙时/执行中（本地时钟推导，推送中断也不冻结）· 队列数（价格明细移入悬停提示）；**点击即可编辑闲时/忙时时段**（本地时间 · 多段 · 实时色带预览） |
-| ② 忙时拦截卡 | `conversation.composer`（chain 槽） | 忙时输入时接管 composer：现在就跑 vs 投递闲时队列，草稿保留 |
+| ② 忙时提示卡 | `conversation.input.dock`（列表槽） | 忙时输入时显示建议，原生 composer 始终保留：现在就跑 vs 投递闲时队列 |
 | ③ 队列面板 | `conversation.input.dock` | 分组队列 · 行内裁定（✓ 批准 / ⏸ 顺延 / ✕ 放弃）· 已放弃可恢复 · 立即开跑 · 执行中独立分组 |
 | ④ 批次确认卡 | `shell.overlay` | 批次窗口前 T-30min 出现，未放行不执行（fail-safe） |
 | ⑤ 执行报告 | `shell.overlay` | 结论先行：本次已省 ¥X · 异常置顶 · 采样候选择优 · 智能迭代审查意见 · 历史报告 |
@@ -75,7 +75,7 @@ dsh plugin --profile web add dsh-lowtide.tgz
 dsh web
 ```
 
-- 宿主区间：0.1.0-rc.7 至 0.2.1 全系（含两代引擎）。网页端需要 `@deepseek-ai/dsh` ≥ 0.1.5-rc.1（`npm i -g @deepseek-ai/dsh` 或随桌面客户端附带）；桌面端本产物已在 DSH Desktop 2.0.3（0.1.1 代引擎）、2.0.19（DSH 0.2.0-rc.2）与 DeepSeek Harness 0.2.1-rc.2 上验证。≥ 0.2.3 起同一份产物两端通吃（0.2.2 及更早版本在 CLI 0.1.5 上无法启动，见 issue #4）；0.2.5 及更早版本的 peer 上界写成了 caret（`^0.1.0-rc.7`，语义上止于 0.2.0 之前），在 DSH 0.2.0 系宿主上会被兼容门禁拒绝；0.2.7 的显式上界 `<0.2.1-0` 同样挡住了 DSH 0.2.1，0.2.8 起上界抬至 `<0.2.2-0`。
+- 宿主区间：`>=0.1.0-rc.7 <0.2.3-0`。网页端需要 `@deepseek-ai/dsh` ≥ 0.1.5-rc.1；0.3.0 已在独立数据目录的 DeepSeek Harness 0.2.2-rc.1 web 分身中完成启动、输入和会话选择器验证。早期桌面/CLI 宿主验证记录见 `CHANGELOG.md`。
 - 两个 profile 的状态文件相互独立（`DSH_PROFILE` 隔离），桌面端与网页端可并行运行。
 - 状态文件：`$DSH_HOME/lowtide.json`（web 端为 `$DSH_HOME/profiles/web/lowtide.json`）。
 
@@ -113,7 +113,7 @@ pnpm.cmd dev   # = dsh web --patch ./cordis.dev.yml
 | POST | `/tasks/approve-all` | 全部放行 |
 | POST | `/estimate` | 测算：峰价（当前模型）vs 谷价（批量模型） |
 | POST | `/batch/run-now` | 立即开跑（测试/手动） |
-| POST | `/dismiss` | 今日不再拦截 |
+| POST | `/dismiss` | 今日不再提醒 |
 | GET | `/health` | 心跳 |
 
 ## 执行引擎

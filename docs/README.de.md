@@ -43,7 +43,7 @@ Einige zentrale Fähigkeiten:
 
 **Freitagabend.** Stellen Sie eine Woche voller Aufgaben auf einmal in die Warteschlange: Abhängigkeitsbereinigung, fehlende Tests, Datenskripte. Am Wochenende gilt rund um die Uhr der Talpreis. Sie gehen aus; es arbeitet zu Hause. Montag prüfen Sie den Bericht — wiederholen, was fehlschlug, übernehmen, was gut ist.
 
-**Eine Eingebung um 10 Uhr morgens.** Sie sind mitten in einem Gespräch mit dem Agenten über einen dringenden Bug, als Sie denken: „Ach, aktualisiere auch die Doku." Die Abfang-Karte erscheint: Jetzt ausführen kostet den Spitzenpreis, heute Nacht etwa die Hälfte — der Unterschied wird erklärt. Klicken Sie auf „Für Nebenzeiten einreihen"; Ihr Entwurf bleibt unangetastet, und Sie kehren zum Bug zurück.
+**Eine Eingebung um 10 Uhr morgens.** Sie sind mitten in einem Gespräch mit dem Agenten über einen dringenden Bug, als Sie denken: „Ach, aktualisiere auch die Doku." Die Spitzenzeiten-Hinweiskarte erscheint: Jetzt ausführen kostet den Spitzenpreis, heute Nacht etwa die Hälfte — der Unterschied wird erklärt. Klicken Sie auf „Für Nebenzeiten einreihen"; Ihr Entwurf bleibt unangetastet, und Sie kehren zum Bug zurück.
 
 **Ein immer laufender Server.** Sie haben eine Maschine, die dsh 24/7 betreibt. Wechseln Sie in den vollautomatischen Modus L3, und legen Sie von überall Aufgaben über die API ab (`POST /ds-lowtide/tasks`). Es führt sie planmäßig aus und schreibt den Bericht. Niemand schaut zu, aber die Sandbox, das Tagesbudget und die Dateisperren sind weiterhin da.
 
@@ -58,7 +58,7 @@ Einige zentrale Fähigkeiten:
 Wann immer Sie einen    Das Queue-Dock         Wenn das Tal-Fenster    Wenn Sie zurück
 Moment haben: ein       gruppiert Aufgaben     sich öffnet: fünf       sind: öffnen Sie
 Klick auf der           nach Arbeitsbereich;   Preflight-Tore →        den Bericht —
-Abfang-Karte, oder →    prüfen Sie Zeile →     bestehen, dann          Ergebnisse + Diff
+Spitzenzeiten-Hinweiskarte, oder →    prüfen Sie Zeile →     bestehen, dann          Ergebnisse + Diff
 legen Sie ein Ticket    für Zeile:             Sandbox-Ausführungen    + tatsächliche
 an (4 Strategien)       ✓freigeben ⏸aufschieben  ein Stapel pro Fenster  Ausgaben
                         ✕verwerfen / alles freigeben                     + gespartes Geld
@@ -90,7 +90,7 @@ Schritt zwei ist das, was lowtide von einem „vollautomatisierten Skript" unter
 
 ![settings](../assets/screenshots/settings.png)
 
-Drei weitere Oberflächen verstecken sich im Tagesablauf: die **Preis-Pille** (Sitzungs-Header — beschäftigt/inaktiv, Warteschlangengröße; Klick zum Bearbeiten der Fenster), die **Abfang-Karte zu Spitzenzeiten** (tippen in der Spitzenzeit, sie erscheint; der Preisunterschied wird erklärt; Ihr Entwurf überlebt) und der **Ausführungsbericht** (das Morgen-Briefing: Ersparnisse zuerst, Anomalien angeheftet, Kandidaten warten auf Ihre Wahl, Markdown-Kopie mit einem Klick).
+Drei weitere Oberflächen verstecken sich im Tagesablauf: die **Preis-Pille** (Sitzungs-Header — beschäftigt/inaktiv, Warteschlangengröße; Klick zum Bearbeiten der Fenster), die **Spitzenzeiten-Hinweiskarte zu Spitzenzeiten** (tippen in der Spitzenzeit, sie erscheint; der Preisunterschied wird erklärt; Ihr Entwurf überlebt) und der **Ausführungsbericht** (das Morgen-Briefing: Ersparnisse zuerst, Anomalien angeheftet, Kandidaten warten auf Ihre Wahl, Markdown-Kopie mit einem Klick).
 
 ## Über die Arbeitsbereiche von lowtide
 
@@ -169,7 +169,7 @@ pnpm --filter dsh-lowtide dev
 
 ## Tägliche Nutzung
 
-**Drei Möglichkeiten, eine Aufgabe einzureichen.** Die Abfang-Karte (in der Spitzenzeit tippen, ein Klick, Ihr Entwurf wird unverändert zum Ticket); das Ticket-Modal („Neu" neben dem Eingabebereich — Prompt, Strategie, Runden, Priorität); oder die API (`POST /ds-lowtide/tasks`, schließen Sie sie an Ihre eigene Automatisierung an).
+**Drei Möglichkeiten, eine Aufgabe einzureichen.** Die Spitzenzeiten-Hinweiskarte (in der Spitzenzeit tippen, ein Klick, Ihr Entwurf wird unverändert zum Ticket); das Ticket-Modal („Neu" neben dem Eingabebereich — Prompt, Strategie, Runden, Priorität); oder die API (`POST /ds-lowtide/tasks`, schließen Sie sie an Ihre eigene Automatisierung an).
 
 **Leben im Queue-Dock.** Gruppiert nach Arbeitsbereich in ausstehend / erledigt / verworfen. Inline pro Aufgabe: ✓ freigeben, ⏸ aufschieben, ✕ verwerfen (weiches Löschen, wiederherstellbar). „Alles freigeben" gibt alles frei; „Erledigte bereinigen" hält es ordentlich (die Bücher bleiben unberührt); „Jetzt ausführen" überspringt das Warten und startet sofort einen Stapel — so debuggen Sie.
 
@@ -215,7 +215,7 @@ Präfix `/ds-lowtide/`, hinter der Same-Origin- und Loopback-Vertrauensgrenze:
 | POST | `/tasks/approve-all` | Alles freigeben |
 | POST | `/estimate` | Schätzung: Spitze vs. Tal |
 | POST | `/batch/run-now` | Stapel jetzt ausführen |
-| POST | `/dismiss` | Keine Abfangung für den Rest des Tages |
+| POST | `/dismiss` | Spitzenzeiten-Hinweise für den Rest des Tages ausblenden |
 | GET | `/health` | Herzschlag |
 
 ## Berechtigungs-Voreinstellungen

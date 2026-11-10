@@ -3,7 +3,7 @@
  * status dot · one-line state (闲时/忙时/执行中) · queue count badge.
  *
  * v3.1: the price number is gone from the pill — a static "¥1.5/M" reads as
- * noise, not an action signal; pricing belongs to the intercept card where
+ * noise, not an action signal; pricing belongs to the peak prompt where
  * the decision happens. The tooltip keeps the full price detail.
  * (The "starts at" countdown was removed — no action value for the user.)
  * Click toggles the queue dock. All copy rides the `t` seat (i18n).

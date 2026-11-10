@@ -2,6 +2,44 @@
 
 All notable changes to dsh-lowtide are documented in this file.
 
+## [0.3.0] - 2026-11-10
+
+### Fixed
+
+- **Peak-hour typing no longer loses focus or cancels IME composition (#10).**
+  The old `conversation.composer` chain elected `InterceptCard` on the first
+  non-empty draft. DSH then hid the native Lexical fallback with `display:none`,
+  cancelling an active composition; the card's second textarea also wrote every
+  key back into the host draft. The peak card now lives in
+  `conversation.input.dock`, the native composer stays resident as the only text
+  editor, and dismissals no longer mutate the draft to force a re-render.
+- **The continuation picker reads the current session cache layout (#11).**
+  DSH 0.2.1 moved from `session_projcache.json` to
+  `session_projcache/sessions/<id>.json`. The picker now prefers the per-record
+  document, falls back to the legacy table when it is absent or malformed, and
+  restores titles, `lastPromptAt` and activity ordering. Untitled sessions use a
+  bounded first-prompt label instead of immediately degrading to a bare id.
+  Blank/archive filtering and per-workspace limits are unchanged.
+
+### Changed
+
+- Peak-hour interception is now a non-destructive prompt. Run-now, queueing,
+  workspace selection, price estimates and dismiss-today remain explicit user
+  actions; ordinary typing and native send never replace the composer.
+- All five host peer ranges now accept the verified 0.2.2 prerelease line:
+  `>=0.1.0-rc.7 <0.2.3-0`.
+
+### Verified
+
+- Core 60 and plugin 191 unit cases pass; build and strict typecheck are clean.
+- The new peak-prompt Playwright spec verifies composer DOM identity, focus,
+  composition events, failed-queue draft preservation and successful queueing.
+  Existing `dock-new`, `g2-modal` and `smoke` specs also pass.
+- An isolated DSH 0.2.2-rc.1 web profile with its own home, port and synthetic
+  data verified both issues, including current-only and mixed cache layouts.
+  No real model turn or batch ran. The original macOS system-Pinyin environment
+  was not available for a direct retest.
+
 ## [0.2.8] - 2026-10-17
 
 ### Fixed

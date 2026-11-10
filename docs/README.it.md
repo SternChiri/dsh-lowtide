@@ -43,7 +43,7 @@ Alcune capacità concrete:
 
 **Venerdì sera.** Metti in coda una settimana di faccende in una volta sola: pulizia delle dipendenze, test mancanti, script per i dati. Nel fine settimana il prezzo di valle vale 24 ore su 24. Tu esci; lui lavora da casa. Lunedì controlli il rapporto — riprova ciò che è fallito, integra ciò che è buono.
 
-**Un'intuizione alle 10 del mattino.** Sei a metà di una conversazione con l'agente su un bug urgente quando pensi "ehi, aggiorna anche i documenti". La scheda di intercettazione appare: eseguirlo ora costa il prezzo di punta, stasera circa la metà — la differenza è spiegata. Clicca su "metti in coda per la valle"; la tua bozza sopravvive intatta e torni al bug.
+**Un'intuizione alle 10 del mattino.** Sei a metà di una conversazione con l'agente su un bug urgente quando pensi "ehi, aggiorna anche i documenti". La scheda di suggerimento per le ore di punta appare: eseguirlo ora costa il prezzo di punta, stasera circa la metà — la differenza è spiegata. Clicca su "metti in coda per la valle"; la tua bozza sopravvive intatta e torni al bug.
 
 **Un server sempre acceso.** Hai una macchina che esegue dsh 24/7. Passa alla modalità L3 completamente automatica, poi inserisci attività da qualsiasi luogo tramite l'API (`POST /ds-lowtide/tasks`). Le esegue secondo programma e scrive il rapporto. Nessuno guarda, ma la sandbox, il budget giornaliero e i blocchi dei file sono ancora lì.
 
@@ -58,7 +58,7 @@ Alcune capacità concrete:
 Ogni volta che hai un   Il dock della coda    Quando si apre la       Quando torni:
 momento: un clic        raggruppa le attività finestra di valle:      apri il rapporto —
 dalla scheda di         per area di lavoro;   cinque cancelli di →    risultati + diff
-intercettazione, o →    arbitra riga per →    preflight passano,      + spesa reale
+suggerimento, o →    arbitra riga per →    preflight passano,      + spesa reale
 apri un ticket          riga:                 poi esecuzioni in       + denaro risparmiato
 (4 strategie)           ✓approva ⏸rinvia      sandbox, un lotto
                         ✕scarta / approva-tutto per finestra
@@ -90,7 +90,7 @@ Il secondo passaggio è ciò che distingue lowtide da uno "script completamente 
 
 ![settings](../assets/screenshots/settings.png)
 
-Altre tre superfici si nascondono nel flusso quotidiano: la **pillola del prezzo** (intestazione della sessione — occupato/inattivo, dimensione della coda; clic per modificare le finestre), la **scheda di intercettazione in punta** (scrivi in punta, appare; la differenza di prezzo è spiegata; la tua bozza sopravvive) e il **rapporto di esecuzione** (il briefing del mattino: risparmi per primi, anomalie evidenziate, candidati in attesa della tua scelta, copia Markdown con un clic).
+Altre tre superfici si nascondono nel flusso quotidiano: la **pillola del prezzo** (intestazione della sessione — occupato/inattivo, dimensione della coda; clic per modificare le finestre), la **scheda di suggerimento per le ore di punta in punta** (scrivi in punta, appare; la differenza di prezzo è spiegata; la tua bozza sopravvive) e il **rapporto di esecuzione** (il briefing del mattino: risparmi per primi, anomalie evidenziate, candidati in attesa della tua scelta, copia Markdown con un clic).
 
 ## Le aree di lavoro di lowtide
 
@@ -169,7 +169,7 @@ Dopo apri dsh: dovresti vedere la pillola del prezzo nell'intestazione della ses
 
 ## Uso quotidiano
 
-**Tre modi per inserire un'attività.** La scheda di intercettazione (scrivi in punta, un clic, la tua bozza diventa il ticket invariato); il modale dei ticket ("Nuovo" accanto all'area di input — prompt, strategia, round, priorità); o l'API (`POST /ds-lowtide/tasks`, collegala alla tua automazione).
+**Tre modi per inserire un'attività.** La scheda di suggerimento per le ore di punta (scrivi in punta, un clic, la tua bozza diventa il ticket invariato); il modale dei ticket ("Nuovo" accanto all'area di input — prompt, strategia, round, priorità); o l'API (`POST /ds-lowtide/tasks`, collegala alla tua automazione).
 
 **La vita nel dock della coda.** Raggruppata per area di lavoro in attesa / completate / scartate. In linea per attività: ✓ approva, ⏸ rinvia, ✕ scarta (eliminazione logica, ripristinabile). "Approva tutto" rilascia tutto; "pulisci completate" tiene tutto in ordine (i conti non sono toccati); "Esegui ora" salta l'attesa e lancia subito un lotto — è così che fai debug.
 
@@ -215,7 +215,7 @@ Prefisso `/ds-lowtide/`, dietro il recinto di fiducia same-origin + loopback:
 | POST | `/tasks/approve-all` | Approva tutto |
 | POST | `/estimate` | Stima: punta vs valle |
 | POST | `/batch/run-now` | Esegui il lotto ora |
-| POST | `/dismiss` | Nessuna intercettazione per il resto della giornata |
+| POST | `/dismiss` | Nessun suggerimento di punta per il resto della giornata |
 | GET | `/health` | Battito cardiaco |
 
 ## Preset di autorizzazione

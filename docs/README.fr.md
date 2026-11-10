@@ -43,7 +43,7 @@ Quelques capacités remarquables :
 
 **Vendredi soir.** Mettez en file une semaine de corvées d'un coup : nettoyage des dépendances, tests manquants, scripts de données. Les week-ends sont à tarif creux 24 h/24. Vous sortez ; il travaille à la maison. Lundi, vous consultez le rapport — relancez ce qui a échoué, fusionnez ce qui est bon.
 
-**Une idée à 10 h du matin.** Vous êtes en pleine conversation avec l'agent à propos d'un bug urgent quand vous pensez « au fait, mets aussi à jour la doc ». La carte d'interception apparaît : l'exécuter maintenant coûte le tarif de pointe, ce soir environ la moitié — la différence est expliquée. Cliquez sur « mettre en file pour les heures creuses » ; votre brouillon survit intact, et vous revenez au bug.
+**Une idée à 10 h du matin.** Vous êtes en pleine conversation avec l'agent à propos d'un bug urgent quand vous pensez « au fait, mets aussi à jour la doc ». La carte de suggestion en heures pleines apparaît : l'exécuter maintenant coûte le tarif de pointe, ce soir environ la moitié — la différence est expliquée. Cliquez sur « mettre en file pour les heures creuses » ; votre brouillon survit intact, et vous revenez au bug.
 
 **Un serveur toujours allumé.** Vous avez une machine qui fait tourner dsh 24 h/24. Passez en mode L3 entièrement automatique, puis déposez des tâches de n'importe où via l'API (`POST /ds-lowtide/tasks`). Il les exécute selon le planning et écrit le rapport. Personne ne surveille, mais la sandbox, le budget quotidien et les verrous de fichiers sont toujours là.
 
@@ -58,7 +58,7 @@ Quelques capacités remarquables :
 Dès que vous avez un   Le dock de la file    Quand la fenêtre de      À votre retour :
 moment : un clic sur   regroupe les tâches   creux s'ouvre : cinq     ouvrez le rapport —
 la carte               par espace de         portes de preflight →   résultats + diff
-d'interception, ou →   travail ; arbitrez →  passent, puis des       + dépense réelle
+de suggestion, ou →   travail ; arbitrez →  passent, puis des       + dépense réelle
 déposez un ticket      ligne par ligne :     exécutions en sandbox   + argent économisé
 (4 stratégies)         ✓approuver ⏸différer  un lot par fenêtre
                        ✕abandonner / tout-approuver
@@ -90,7 +90,7 @@ L'étape deux est ce qui distingue lowtide d'un « script entièrement automatis
 
 ![settings](../assets/screenshots/settings.png)
 
-Trois autres surfaces se cachent dans le flux quotidien : la **pilule de prix** (en-tête de session — occupé/inactif, taille de la file ; cliquez pour éditer les fenêtres), la **carte d'interception en heures pleines** (tapez en heure pleine, elle apparaît ; la différence de prix est expliquée ; votre brouillon survit) et le **rapport d'exécution** (le briefing du matin : économies d'abord, anomalies épinglées, candidats attendant votre choix, copie Markdown en un clic).
+Trois autres surfaces se cachent dans le flux quotidien : la **pilule de prix** (en-tête de session — occupé/inactif, taille de la file ; cliquez pour éditer les fenêtres), la **carte de suggestion en heures pleines en heures pleines** (tapez en heure pleine, elle apparaît ; la différence de prix est expliquée ; votre brouillon survit) et le **rapport d'exécution** (le briefing du matin : économies d'abord, anomalies épinglées, candidats attendant votre choix, copie Markdown en un clic).
 
 ## À propos des espaces de travail lowtide
 
@@ -169,7 +169,7 @@ Ouvrez dsh ensuite : vous devriez voir la pilule de prix dans l'en-tête de sess
 
 ## Utilisation au quotidien
 
-**Trois façons de déposer une tâche.** La carte d'interception (tapez en heure pleine, un clic, votre brouillon devient le ticket inchangé) ; la fenêtre modale de tickets (« Nouveau » à côté de la zone de saisie — prompt, stratégie, rondes, priorité) ; ou l'API (`POST /ds-lowtide/tasks`, à brancher sur votre propre automatisation).
+**Trois façons de déposer une tâche.** La carte de suggestion en heures pleines (tapez en heure pleine, un clic, votre brouillon devient le ticket inchangé) ; la fenêtre modale de tickets (« Nouveau » à côté de la zone de saisie — prompt, stratégie, rondes, priorité) ; ou l'API (`POST /ds-lowtide/tasks`, à brancher sur votre propre automatisation).
 
 **La vie dans le dock de la file.** Groupée par espace de travail : en attente / terminées / abandonnées. En ligne par tâche : ✓ approuver, ⏸ différer, ✕ abandonner (suppression douce, restaurable). « Tout approuver » libère tout ; « nettoyer les terminées » garde l'ordre (les comptes ne sont pas affectés) ; « Exécuter maintenant » saute l'attente et lance un lot immédiatement — c'est comme ça qu'on débogue.
 
@@ -215,7 +215,7 @@ Préfixe `/ds-lowtide/`, derrière la barrière de confiance même-origine + loo
 | POST | `/tasks/approve-all` | Tout approuver |
 | POST | `/estimate` | Estimation : pic vs creux |
 | POST | `/batch/run-now` | Exécuter le lot maintenant |
-| POST | `/dismiss` | Pas d'interception pour le reste de la journée |
+| POST | `/dismiss` | Pas de suggestion de pointe pour le reste de la journée |
 | GET | `/health` | Battement de cœur |
 
 ## Presets de permissions

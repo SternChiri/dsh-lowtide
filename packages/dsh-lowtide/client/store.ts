@@ -173,7 +173,7 @@ export interface ClientUiState {
   activeLocale: string
   /**
    * Tier derived from the local clock + the host's windows. This is what the
-   * pill and the intercept card DISPLAY, so a stalled stream can never freeze
+   * pill and the peak prompt DISPLAY, so a stalled stream can never freeze
    * 闲时/忙时; the host's `price.tier` stays the pricing/ledger authority.
    */
   tier: TierSnapshot
