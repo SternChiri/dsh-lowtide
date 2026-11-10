@@ -12,7 +12,6 @@ import {
 } from '@deepseek-ai/dsh-client-ui-primitives'
 import { approveAll, clearFinished, runNow } from '../api.ts'
 import { lowtideStore, refreshNow, showToast, useLowtide, type HostState, type HostTask } from '../store.ts'
-import { useInterceptDraftTracking } from '../hooks/useInterceptDraft.ts'
 import { type NsTranslate } from '../i18n.ts'
 import { Money } from './atoms.tsx'
 import { TaskRow } from './TaskRow.tsx'
@@ -42,12 +41,6 @@ export function QueueDock(props: QueueDockProps): React.JSX.Element {
   const [onboarded, setOnboarded] = useState(() => {
     try { return localStorage.getItem('dsh-lowtide:onboarded') === '1' } catch { return true }
   })
-
-  // Keep the intercept chain's draft tracker fresh. The dock stays mounted
-  // inside the overlay-kept fallback even while the intercept card is
-  // elected, so the draft (and its per-message dismissal) stays accurate.
-  const liveDraft = props.useInput((input) => input.draft)
-  useInterceptDraftTracking(liveDraft)
 
   if (host === null) {
     // 断连/加载中:不整块隐身,给一行占位 + 重试(避免插件"消失"的观感)。

@@ -1,14 +1,12 @@
-/* InterceptCard §6.2: composer-shaped light card, token discipline only.
- * Phase D: the input/workspace/warning styles moved to TaskForm.module.css. */
+/* Non-destructive busy-hour prompt in the input dock. */
 .card {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 16px 20px;
+  padding: 10px 12px;
   background: var(--dsw-specific-input-major);
   border: 1px solid var(--dsw-alias-border-l2-darkmode-thin);
-  border-radius: 22px;
-  box-shadow: var(--dsw-shadow-lv2);
+  border-radius: 12px;
 }
 
 .header {
@@ -51,6 +49,7 @@
 
 .compare {
   display: flex;
+  flex-wrap: wrap;
   gap: 16px;
 }
 
@@ -62,6 +61,7 @@
 .row {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
 }
 

@@ -1,7 +1,7 @@
 /**
  * dsh-lowtide browser half (Phase 1 assembly + review round 1 polish).
  * Six-surface registrations: ① PricePill (header utilities), ② InterceptCard
- * (composer chain), ③ QueueDock (input dock), ⑤ MorningReport (shell overlay).
+ * and ③ QueueDock (input dock), ⑤ MorningReport (shell overlay).
  * ④ ConfirmGate and ⑥ Settings land in the same overlay/settings slots.
  * Polling drives the entry store (SSE is the live path, polling the fallback).
  *
@@ -21,7 +21,7 @@ import type { ReactElement } from 'react'
 import { Toast } from '@deepseek-ai/dsh-client-ui-primitives'
 import { DICTS, NS } from './i18n.ts'
 import { PricePill } from './components/PricePill.tsx'
-import { InterceptCard, selectIntercept } from './components/InterceptCard.tsx'
+import { InterceptCard } from './components/InterceptCard.tsx'
 import { QueueDock } from './components/QueueDock.tsx'
 import { MorningReport } from './components/MorningReport.tsx'
 import { ConfirmGate } from './components/ConfirmGate.tsx'
@@ -61,10 +61,8 @@ export function apply(ctx: ClientContext): void {
     PricePill,
   ))
 
-  // The select keys off the live draft (intercept-draft.ts): an empty draft
-  // keeps the native bar + queue dock visible; typing claims the composer.
-  ctx.slots.inject('conversation.composer', () => ctx.slots.register(
-    { name: 'conversation.composer', select: selectIntercept, locale: NS },
+  ctx.slots.inject('conversation.input.dock', () => ctx.slots.register(
+    { name: 'conversation.input.dock', id: 'lt-peak-prompt', order: 90, locale: NS },
     InterceptCard,
   ))
 

@@ -1,65 +1,22 @@
 /**
- * Interface ② InterceptCard (PLAN §6.2 + G0 directive + review rounds):
- * busy-hour send interception. Claims the composer chain while it is a priced
- * window (peak, or custom ×multiplier>1) ∧ not dismissed today ∧ a live
- * session exists ∧ the draft is non-empty. Carries its OWN input surface
- * (the native bar stays mounted but hidden — draft preserved) via the shared
- * TaskForm (intercept variant). Decision set ≤3: [现在就跑] sends the draft,
- * [投递到闲时队列] queues it for off-peak, [今日不再提醒] dismisses for the
- * day, ✕ exempts this message.
- *
- * The workspace is explicit: an empty one falls back to the last used path,
- * and the warning tells the user the server default directory will be used —
- * a task must never silently run in the server's cwd (review B8).
- *
- * Dismissal mechanics (hooks/useInterceptDraft.ts): the chain re-runs
- * selectors only on owner re-renders, so ✕ sets the session flag and toggles
- * the draft once (append + restore, batched into one render) to force the
- * native composer back with the draft intact.
+ * Busy-hour prompt in the input dock. The native composer remains resident
+ * and is the only text editor; this card offers explicit run/queue actions.
+ * It appears for peak or custom >1x windows while the live draft is non-empty.
  */
 import { useEffect, useState } from 'react'
 import type { PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
-import type { ComposerChainProps } from '@deepseek-ai/dsh-client-ui-conversation/client'
+import type {} from '@deepseek-ai/dsh-client-ui-conversation/client'
 import { Button, StateDot } from '@deepseek-ai/dsh-client-ui-primitives'
 import { Icon } from '../lib/icons.tsx'
 import { dismissPeakToday, estimate, rememberWorkspace, submitTask, lastWorkspace } from '../api.ts'
 import { lowtideStore, refreshNow, showToast, useLowtide } from '../store.ts'
-import { dismissInterceptSession, isInterceptSessionDismissed, readInterceptDraft } from '../hooks/useInterceptDraft.ts'
 import { type NsTranslate } from '../i18n.ts'
 import { TaskForm, type TaskFormValues } from './TaskForm.tsx'
 import styles from './InterceptCard.module.css'
 
-export interface InterceptMatched {
-  kind: 'lt-intercept'
-}
+export type InterceptCardProps = PropsRuntime<'conversation.input.dock'> & { t: NsTranslate }
 
-/**
- * Pure chain routing: priced window ∧ not dismissed ∧ session present ∧
- * draft non-empty. The draft condition keeps the native bar (and the queue
- * dock) visible until the user actually starts typing (PLAN §6.2).
- *
- * v0.2.2: the tier comes from the local clock (`store.tier`), so a stalled
- * push stream can neither hide nor freeze the intercept card at a boundary.
- */
-export function selectIntercept(owner: ComposerChainProps): InterceptMatched | null {
-  const snapshot = lowtideStore.getSnapshot()
-  const host = snapshot.host
-  if (host === null) return null
-  const tier = snapshot.tierAt > 0 ? snapshot.tier : null
-  const level = tier?.level ?? host.price.tier
-  const multiplier = tier?.multiplier ?? host.price.multiplier
-  const priced = level === 'peak' || (level === 'custom' && multiplier > 1)
-  if (!priced) return null
-  if (host.dismissedPeakToday) return null
-  if (readInterceptDraft().trim() === '') return null
-  if (isInterceptSessionDismissed()) return null
-  if (owner.session === undefined) return null
-  return { kind: 'lt-intercept' }
-}
-
-export type InterceptCardProps = PropsRuntime<'conversation.composer'> & { matched: InterceptMatched; t: NsTranslate }
-
-export function InterceptCard(props: InterceptCardProps): React.JSX.Element {
+export function InterceptCard(props: InterceptCardProps): React.JSX.Element | null {
   const { t } = props
   const draft = props.useInput((input) => input.draft)
   const host = useLowtide((s) => s.host)
@@ -67,16 +24,19 @@ export function InterceptCard(props: InterceptCardProps): React.JSX.Element {
   const tierAt = useLowtide((s) => s.tierAt)
   const [workspace, setWorkspace] = useState(() => lastWorkspace())
   const [submitting, setSubmitting] = useState(false)
-  // Price estimate: peak = now (current UI model), off = batch model (user's
-  // choice or default). Fetched debounced as the draft changes.
+  const [dismissed, setDismissed] = useState(false)
   const [estimateResult, setEstimateResult] = useState<{ peak: number; off: number } | null>(null)
 
-  // Clock-accurate tier first, host snapshot as the pre-first-frame fallback.
+  useEffect(() => {
+    if (draft.trim() === '') setDismissed(false)
+  }, [draft])
+
   const shownLevel = tierAt > 0 ? tier.level : host?.price.tier ?? 'off'
   const shownMultiplier = tierAt > 0 ? tier.multiplier : host?.price.multiplier ?? 1
   const shownWindow = tierAt > 0 ? tier.window : host?.level?.window ?? null
   const peakWindow = shownWindow !== null ? `${shownWindow.start}–${shownWindow.end}` : ''
   const customMultiplier = shownLevel === 'custom' ? shownMultiplier : null
+  const priced = shownLevel === 'peak' || (shownLevel === 'custom' && shownMultiplier > 1)
   const tierText = customMultiplier !== null && customMultiplier > 1
     ? t('intercept.tierCustom', { multiplier: customMultiplier })
     : t('intercept.tierPeak')
@@ -89,16 +49,13 @@ export function InterceptCard(props: InterceptCardProps): React.JSX.Element {
     priority: 1,
     files: '',
     reasoning: 'follow',
-    // Follow the live selection (no hard-coded legacy id — see NewTaskModal).
     model: host?.price.model ?? '',
     modelProvider: '',
     strategyHint: '',
-    // Intercept submissions always follow the global autonomy level.
     autonomy: host?.autonomy === 'l1' || host?.autonomy === 'l3' ? host.autonomy : 'l2',
     sessionMode: 'new',
   }
 
-  // Debounced price estimate as the draft changes.
   useEffect(() => {
     if (draft.trim() === '') {
       setEstimateResult(null)
@@ -115,17 +72,7 @@ export function InterceptCard(props: InterceptCardProps): React.JSX.Element {
   }, [draft, host?.price.model, formValues.model])
 
   function onFormChange(patch: Partial<TaskFormValues>): void {
-    if (patch.prompt !== undefined) props.inputActions.setDraft(patch.prompt)
     if (patch.workspace !== undefined) setWorkspace(patch.workspace)
-  }
-
-  function closeAndKeepDraft(): void {
-    dismissInterceptSession()
-    // Force one owner re-render so the chain re-runs its selectors: append a
-    // transient space and restore — both updates batch into a single render
-    // whose final draft equals the original, and the selectors see the flag.
-    props.inputActions.setDraft(draft + ' ')
-    props.inputActions.setDraft(draft)
   }
 
   async function queueTonight(): Promise<void> {
@@ -151,15 +98,12 @@ export function InterceptCard(props: InterceptCardProps): React.JSX.Element {
   }
 
   function dismiss(): void {
-    void dismissPeakToday().then(() => refreshNow()).then(() => {
-      // After the poll confirms the server-side dismissal, force the owner
-      // re-render so the selectors drop the card immediately.
-      props.inputActions.setDraft(draft + ' ')
-      props.inputActions.setDraft(draft)
-    })
+    void dismissPeakToday().then(() => refreshNow())
   }
 
-  const priceKnown = host?.price.priceKnown ?? false
+  if (host === null || !priced || host.dismissedPeakToday || draft.trim() === '' || dismissed) return null
+
+  const priceKnown = host.price.priceKnown
   const peakLabel = estimateResult !== null && priceKnown
     ? `¥${estimateResult.peak.toFixed(2)}`
     : priceKnown ? t('intercept.priceNowPeak') : t('intercept.priceUnknown')
@@ -168,13 +112,13 @@ export function InterceptCard(props: InterceptCardProps): React.JSX.Element {
     : priceKnown ? t('intercept.priceTonight') : t('intercept.priceUnknown')
 
   return (
-    <div className={styles.card}>
+    <div className={styles.card} data-lowtide-peak-prompt>
       <div className={styles.header}>
         <span className={styles.title}>
           <span className={styles.dot}><StateDot state="error" /></span>
           {t('intercept.title', { tier: tierText, window: peakWindow })}
         </span>
-        <button type="button" className={styles.close} title={t('intercept.closeTitle')} onClick={closeAndKeepDraft}>
+        <button type="button" className={styles.close} title={t('intercept.closeTitle')} onClick={() => setDismissed(true)}>
           <Icon name="IconCloseOutline16" />
         </button>
       </div>
@@ -192,15 +136,13 @@ export function InterceptCard(props: InterceptCardProps): React.JSX.Element {
           <span className={styles.priceValue}>{offLabel}</span>
         </span>
       </div>
-      {host !== null && host !== undefined && (
-        <div className={styles.queueStatus}>
-          <Icon name="IconQueueOutline14" className={styles.queueIcon} />
-          {t('intercept.queueStatus', { total: host.queue.total, pending: host.queue.pendingReview })}
-        </div>
-      )}
+      <div className={styles.queueStatus}>
+        <Icon name="IconQueueOutline14" className={styles.queueIcon} />
+        {t('intercept.queueStatus', { total: host.queue.total, pending: host.queue.pendingReview })}
+      </div>
       <div className={styles.row}>
         <Button variant="outline" size="md" onClick={() => props.inputActions.submit()}>{t('intercept.runNow')}</Button>
-        <Button variant="primary" size="md" disabled={submitting || draft.trim() === ''} onClick={() => void queueTonight()}>
+        <Button variant="primary" size="md" disabled={submitting} onClick={() => void queueTonight()}>
           {t('intercept.enqueue')}
         </Button>
         <button type="button" className={styles.dismiss} onClick={dismiss}>{t('intercept.dismiss')}</button>

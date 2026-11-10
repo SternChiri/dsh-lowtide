@@ -8,7 +8,8 @@ export default defineConfig({
   // suite is small; determinism beats speed here).
   workers: 1,
   use: {
-    baseURL: 'http://127.0.0.1:3080',
+    baseURL: process.env.DSH_E2E_BASE_URL ?? 'http://127.0.0.1:3080',
+    storageState: process.env.DSH_E2E_STORAGE_STATE,
     viewport: { width: 1440, height: 900 },
     // Review round 1: the G1 run crashed the renderer during a blind wait on
     // this machine — disabling GPU compositing avoids the most common Windows

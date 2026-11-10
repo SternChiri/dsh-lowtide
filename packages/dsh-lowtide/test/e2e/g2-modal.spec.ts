@@ -5,6 +5,7 @@
  */
 import { test, expect } from '@playwright/test'
 import type { Page } from '@playwright/test'
+import { dismissHostDialogs } from './host.ts'
 
 async function shot(page: Page, name: string): Promise<void> {
   await page.screenshot({ path: `test/screenshots/g2-${name}-light.png` })
@@ -25,6 +26,7 @@ test('g2: new task modal, default + review strategy', async ({ page }) => {
   await page.goto('/')
   await page.waitForSelector('[data-shell-overlay], main', { timeout: 20_000 }).catch(() => {})
   await page.waitForTimeout(4000)
+  await dismissHostDialogs(page)
   expect(crashed, `renderer health: ${crashed ?? 'ok'}`).toBeNull()
 
   // Open a session (pill appears only inside a live session header).

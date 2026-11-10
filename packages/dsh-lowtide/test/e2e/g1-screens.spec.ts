@@ -13,10 +13,10 @@
  * Review round 1 notes:
  * - selectors are LOCALE-AGNOSTIC (structural slots + exact regex names):
  *   the page's active locale flipped between zh/en across runs;
- * - the interception keys off the LIVE DRAFT (intercept-draft.ts): an empty
- *   draft keeps the native composer + queue dock visible; typing claims the
- *   composer. The input draft persists per session, so the spec ✕-dismisses
- *   any active intercept before the dock steps and re-arms it for ②.
+ * - the peak prompt keys off the live draft in the input dock. It never
+ *   replaces the native composer. The input draft persists per session, so
+ *   the spec dismisses an active prompt before the dock steps and re-arms it
+ *   by clearing the draft before ②.
  */
 import { test, expect } from '@playwright/test'
 import type { Page } from '@playwright/test'
@@ -50,17 +50,10 @@ async function openSession(page: Page): Promise<void> {
   await openConversation(page)
 }
 
-/** Dismiss an active intercept card (✕) so the native composer + dock show. */
+/** Dismiss an active peak prompt without changing the native draft. */
 async function dismissIntercept(page: Page): Promise<void> {
-  const close = page.locator('[data-slot="conversation.composer"] button[title]').first()
-  for (let i = 0; i < 8; i++) {
-    if (await close.isVisible().catch(() => false)) {
-      await close.click({ timeout: 3000 })
-      await page.waitForTimeout(800)
-    }
-    if (await page.locator(DOCK).locator('button').last().isVisible().catch(() => false)) return
-    await page.waitForTimeout(1000)
-  }
+  const close = page.locator('[data-lowtide-peak-prompt] button[title]').first()
+  if (await close.isVisible().catch(() => false)) await close.click({ timeout: 3000 })
 }
 
 test('g1: six surfaces, light + dark', async ({ page, request }) => {
@@ -79,8 +72,7 @@ test('g1: six surfaces, light + dark', async ({ page, request }) => {
   // ① PricePill — session header utility.
   await shot(page, '01-pricepill')
 
-  // The dock lives inside the native input area; an active intercept (the
-  // input draft persists per session) hides it — dismiss the card first.
+  // Dismiss a persisted-draft prompt for an unobstructed queue screenshot.
   await dismissIntercept(page)
 
   const dock = page.locator(DOCK)
@@ -90,7 +82,7 @@ test('g1: six surfaces, light + dark', async ({ page, request }) => {
   await page.waitForTimeout(300)
 
   // ③ QueueDock — expand the drawer (queue holds the e2e leftovers).
-  await dock.locator('button').last().click() // Expand / Collapse toggle
+  await dock.getByRole('button', { name: /展开|Expand/ }).click()
   await page.waitForTimeout(800)
   await shot(page, '03-queuedock')
 
@@ -131,13 +123,11 @@ test('g1: six surfaces, light + dark', async ({ page, request }) => {
   await page.waitForTimeout(500)
   await shot(page, '05-batchrunning')
 
-  // ② InterceptCard — re-arm this page-session interception (the ✕ above set
-  //    the session flag), then type a draft so the compare renders and the
-  //    card claims the composer on the next owner re-render.
-  await page.evaluate(() => {
-    sessionStorage.removeItem('dsh-lowtide:intercept-session-dismissed')
-  })
-  await page.locator('textarea:visible').first().fill('重构 auth.ts 的错误处理并跑一遍测试')
+  // ② InterceptCard — clearing the draft re-arms the dismissed prompt. The
+  // native editor stays mounted and the prompt renders beside it in the dock.
+  const composer = page.locator('[contenteditable="true"]:visible').first()
+  await composer.fill('')
+  await composer.fill('重构 auth.ts 的错误处理并跑一遍测试')
   await page.waitForTimeout(600)
   await shot(page, '02-interceptcard')
 

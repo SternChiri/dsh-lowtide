@@ -8,6 +8,7 @@
 import { test, expect } from '@playwright/test'
 import type { Page } from '@playwright/test'
 import { E2E_WORKSPACE } from './workspace.ts'
+import { dismissHostDialogs } from './host.ts'
 
 async function waitDock(page: Page): Promise<void> {
   const dock = page.locator('[data-slot="conversation.input.dock"]')
@@ -37,6 +38,7 @@ test('dock New button opens the modal in both collapsed and expanded states', as
   await page.goto('/')
   await page.waitForSelector('[data-shell-overlay], main', { timeout: 20_000 }).catch(() => {})
   await page.waitForTimeout(4000)
+  await dismissHostDialogs(page)
   await waitDock(page)
   const dock = page.locator('[data-slot="conversation.input.dock"]')
 

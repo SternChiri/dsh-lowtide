@@ -5,16 +5,15 @@
  * A fully CONTROLLED presentational component — the caller owns the state:
  *  - NewTaskModal (variant="modal") holds local state and submits via the
  *    task API; it also owns `advancedOpen` (the separate advanced window);
- *  - InterceptCard (variant="intercept") binds the prompt to the host input
- *    store (inputActions.setDraft) and keeps the workspace in local state.
+ *  - InterceptCard (variant="intercept") keeps only the workspace in local
+ *    state; the native composer remains the sole prompt editor.
  *
  * modal:     prompt (placeholder follows the strategy) + workspace/priority
  *            side by side + strategy (plain pills, hover tooltips, dynamic
  *            explanation line, rounds for iterative/sampling, per-strategy
  *            guidance text) + permission + an "advanced" gear button that
  *            opens a separate SMALL WINDOW (reasoning effort, locked files).
- * intercept: prompt + workspace + empty-workspace warning only — the quick
- *            enqueue surface stays minimal.
+ * intercept: workspace + empty-workspace warning only.
  */
 import type { ReactElement } from 'react'
 import { useMemo } from 'react'
@@ -189,13 +188,6 @@ export function TaskForm(props: {
   if (variant === 'intercept') {
     return (
       <div className={styles.compact}>
-        <textarea
-          className={styles.prompt}
-          placeholder={t('intercept.inputPlaceholder')}
-          value={values.prompt}
-          onChange={(e) => onChange({ prompt: e.target.value })}
-          rows={3}
-        />
         <div className={styles.compactRow}>
           <span className={styles.compactLabel}>{t('intercept.workspaceLabel')}</span>
           <input
